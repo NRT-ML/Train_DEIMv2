@@ -1,0 +1,12 @@
+!configs/
+!configs/sample.yaml
+datasets/
+outputs/
+
+# VSCode
+*.code-workspace
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
