@@ -36,37 +36,14 @@ from pathlib import Path
 
 import torch
 
+# Windows環境での分散処理の問題を回避するための環境変数設定
+# libuvサポートなしのPyTorchで発生するエラーを防ぐ
+if 'USE_LIBUV' not in os.environ:
+    os.environ['USE_LIBUV'] = '0'
+
 script_dir = Path(__file__).parent.absolute()
 deimv2_dir = script_dir / 'DEIMv2'
 sys.path.insert(0, str(deimv2_dir))
-
-# # ================================
-# # torchvision v2互換性パッチ
-# # ================================
-# # DEIMv2のカスタムトランスフォームは_transform()メソッドを実装していますが、
-# # torchvision v2の新しいAPIではtransform()メソッドが必要です。
-# # このパッチは、DEIMv2を変更せずにtorchvision v2との互換性を確保します。
-# import torchvision.transforms.v2 as T
-
-# # 元のTransformクラスのtransform()メソッドを保存
-# _original_transform = T.Transform.transform
-
-# def _patched_transform(self, inpt, params):
-#     """
-#     torchvision v2互換性のためのパッチ。
-    
-#     DEIMv2のカスタムトランスフォームは_transform()を実装しているため、
-#     NotImplementedErrorの代わりに_transform()を呼び出します。
-#     """
-#     if hasattr(self, '_transform'):
-#         # DEIMv2のカスタムトランスフォームの場合、_transform()を使用
-#         return self._transform(inpt, params)
-#     else:
-#         # 通常のtorchvision transformsの場合、元の動作を維持
-#         return _original_transform(self, inpt, params)
-
-# # transform()メソッドをパッチ
-# T.Transform.transform = _patched_transform
 
 from libs import load_config_from_yaml, create_deimv2_config
 
@@ -102,16 +79,15 @@ def main(args: argparse.Namespace):
         seed=args.seed
     )
     
-    # 分散訓練が初期化されていない場合（単一GPU）、
-    # ダミーの分散環境を初期化する
+    # 分散訓練が初期化されていない場合(単一GPU)、
+    # Windows環境ではlibuvサポートの問題があるため、
+    # 単一GPUモードでは分散処理を初期化しない
     if not torch.distributed.is_initialized():
-        logger.info("単一GPUモード: torch.distributedを初期化")
-        torch.distributed.init_process_group(
-            backend='gloo',  # Windowsでも動作するバックエンド
-            init_method='tcp://127.0.0.1:23456',
-            world_size=1,
-            rank=0
-        )
+        logger.info("単一GPUモード: 分散処理を使用しません")
+        # 分散処理を使用しない場合は、環境変数を設定
+        os.environ['RANK'] = '0'
+        os.environ['WORLD_SIZE'] = '1'
+        os.environ['LOCAL_RANK'] = '0'
     
     # 設定ファイルを読み込み
     user_config = load_config_from_yaml(args.config)

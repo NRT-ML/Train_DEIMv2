@@ -1,7 +1,11 @@
-!configs/
+configs/*
 !configs/sample.yaml
 datasets/
 outputs/
+weight/
+
+# experiments
+notebooks/
 
 # VSCode
 *.code-workspace
