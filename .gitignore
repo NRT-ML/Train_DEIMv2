@@ -3,6 +3,7 @@ configs/*
 datasets/
 outputs/
 weight/
+*.jpg
 
 # experiments
 notebooks/
