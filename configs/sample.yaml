@@ -168,9 +168,27 @@ train_dataloader:
       ops:
         # 最小限のトランスフォームでテスト
         # DEIMv2のカスタムトランスフォームとtorchvision v2の互換性問題を回避
-        - {type: Resize}  # sizeはimage_sizeから自動設定
-        - {type: ConvertPILImage, dtype: 'float32', scale: true}
-        - {type: ConvertBoxes, fmt: 'cxcywh', normalize: true}
+        - {
+            "type": "Mosaic",
+            "fill_value": 0,
+            "max_cached_images": 50,
+            # "output_size": # image_sizeから自動設定
+            "probability": 1.0,
+            "random_pop": True,
+            "rotation_range": 10,
+            "scaling_range": [0.5, 1.5],
+            "translation_range": [0.1, 0.1],
+            "use_cache": False,
+        } # sizeはimage_sizeから自動設定
+        - {"type": "RandomPhotometricDistort", "p": 0.5}
+        - {"type": "RandomZoomOut", "fill": 0}
+        - {"type": "RandomIoUCrop", "p": 0.8}
+        - {"type": "SanitizeBoundingBoxes", "min_size": 1}
+        - {"type": "RandomHorizontalFlip"}
+        - {"type": "Resize"} # sizeはimage_sizeから自動設定
+        - {"type": "SanitizeBoundingBoxes", "min_size": 1}
+        - {"type": "ConvertPILImage", "dtype": "float32", "scale": True}
+        - {"type": "ConvertBoxes", "fmt": "cxcywh", "normalize": True}
 
 # ========================================
 # 検証データローダー設定

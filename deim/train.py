@@ -23,6 +23,15 @@ Usage:
     # 評価のみ
     python deim/train.py --test-only --resume path/to/checkpoint.pth
 
+    # 訓練後に自動的にONNX形式にエクスポート
+    python deim/train.py --export-onnx
+
+    # スタンドアロンでONNX変換のみ実行
+    python deim/train.py --export-onnx --resume outputs/best_stg1.pth --test-only
+
+    # ONNXエクスポートの詳細オプション
+    python deim/train.py --export-onnx --onnx-output model.onnx --onnx-opset 16 --onnx-batch-size 16
+
 References:
     - DEIMv2: https://github.com/Intellindust-AI-Lab/DEIMv2
     - DEIMKit: https://github.com/dnth/DEIMKit
@@ -45,7 +54,7 @@ script_dir = Path(__file__).parent.absolute()
 deimv2_dir = script_dir / 'DEIMv2'
 sys.path.insert(0, str(deimv2_dir))
 
-from libs import load_config_from_yaml, create_deimv2_config
+from libs import load_config_from_yaml, create_deimv2_config, export_to_onnx, save_training_config
 
 # DEIMv2のengineモジュールをインポート
 from engine.misc import dist_utils
@@ -58,6 +67,7 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 logger = logging.getLogger()
+
 
 def main(args: argparse.Namespace):
     """
@@ -134,6 +144,46 @@ def main(args: argparse.Namespace):
         # 訓練を実行
         logger.info("訓練を開始します...")
         solver.fit()
+        
+        # 訓練完了後、設定を保存
+        output_dir = cfg.yaml_cfg.get('output_dir', './outputs')
+        best_model_path = os.path.join(output_dir, 'best_stg1.pth')
+        if os.path.exists(best_model_path):
+            logger.info("訓練時の最終設定を保存...")
+            save_training_config(best_model_path, cfg.yaml_cfg)
+        
+        # 訓練完了後、ONNXエクスポートを実行
+        if args.export_onnx:
+            logger.info("\n訓練が完了しました。ONNXエクスポートを開始します...")
+            
+            # ベストモデルが存在しない場合は最後のモデルを使用
+            if not os.path.exists(best_model_path):
+                logger.warning(f"ベストモデルが見つかりません: {best_model_path}")
+                best_model_path = os.path.join(output_dir, 'last.pth')
+                
+                if not os.path.exists(best_model_path):
+                    logger.error(f"モデルファイルが見つかりません: {best_model_path}")
+                    logger.error("ONNXエクスポートをスキップします")
+                else:
+                    logger.info(f"最後のモデルを使用します: {best_model_path}")
+            else:
+                logger.info(f"ベストモデルを使用します: {best_model_path}")
+            
+            # ONNXエクスポートを実行
+            if os.path.exists(best_model_path):
+                onnx_path = export_to_onnx(
+                    checkpoint_path=best_model_path,
+                    config_path=None,  # 保存された設定を自動検出
+                    output_path=args.onnx_output,
+                    opset_version=args.onnx_opset,
+                    check_model=args.onnx_check,
+                    simplify=args.onnx_simplify,
+                    batch_size=args.onnx_batch_size
+                )
+                
+                if onnx_path:
+                    logger.info(f"✓ ONNXモデルが正常に保存されました: {onnx_path}")
+
     
     # クリーンアップ
     dist_utils.cleanup()
@@ -175,6 +225,15 @@ def parse_arguments() -> argparse.Namespace:
 
   # AMP（自動混合精度）を有効化
   python deim/train.py --use-amp
+
+  # 訓練後にONNX変換
+  python deim/train.py --export-onnx
+
+  # スタンドアロンでONNX変換のみ実行
+  python deim/train.py --export-onnx --resume outputs/best_stg1.pth --test-only
+
+  # ONNX変換の詳細オプション
+  python deim/train.py --export-onnx --onnx-output model.onnx --onnx-opset 16
         """
     )
     
@@ -241,6 +300,48 @@ def parse_arguments() -> argparse.Namespace:
         help='評価のみ実行（訓練しない）'
     )
     
+    # ONNXエクスポート関連のオプション
+    parser.add_argument(
+        '--export-onnx',
+        action='store_true',
+        help='訓練完了後にONNX形式にエクスポート'
+    )
+    
+    parser.add_argument(
+        '--onnx-output',
+        type=str,
+        default=None,
+        help='ONNXファイルの出力パス（デフォルト: モデルと同じディレクトリ）'
+    )
+    
+    parser.add_argument(
+        '--onnx-opset',
+        type=int,
+        default=17,
+        help='ONNXのopsetバージョン（デフォルト: 17）'
+    )
+    
+    parser.add_argument(
+        '--onnx-check',
+        action='store_true',
+        default=True,
+        help='エクスポート後にONNXモデルを検証'
+    )
+    
+    parser.add_argument(
+        '--onnx-simplify',
+        action='store_true',
+        default=True,
+        help='onnx-simplifierで最適化（デフォルト: 有効）'
+    )
+    
+    parser.add_argument(
+        '--onnx-batch-size',
+        type=int,
+        default=32,
+        help='ONNXエクスポート時のバッチサイズ（デフォルト: 32）'
+    )
+    
     # 優先度1: 詳細設定
     parser.add_argument(
         '-u', '--update',
@@ -276,4 +377,25 @@ def parse_arguments() -> argparse.Namespace:
 
 if __name__ == '__main__':
     args = parse_arguments()
-    main(args)
+    
+    # スタンドアロンでONNX変換のみを実行する場合
+    # --export-onnx --resume <checkpoint> --test-only のように指定
+    if args.export_onnx and args.resume and args.test_only:
+        logger.info("スタンドアロンONNX変換モード")
+        
+        onnx_path = export_to_onnx(
+            checkpoint_path=args.resume,
+            config_path=args.config,  # Noneの場合は自動検出
+            output_path=args.onnx_output,
+            opset_version=args.onnx_opset,
+            check_model=args.onnx_check,
+            simplify=args.onnx_simplify,
+            batch_size=args.onnx_batch_size
+        )
+        if onnx_path:
+            logger.info(f"✓ ONNXモデルが正常に保存されました: {onnx_path}")
+    else:
+        # 通常の訓練/評価を実行
+        main(args)
+
+
