@@ -1,5 +1,5 @@
 configs/*
-!configs/sample.yaml
+!configs/config.yaml
 datasets/
 outputs/
 weight/
