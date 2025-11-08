@@ -5,6 +5,8 @@ datasets/
 outputs/
 weight/
 *.jpg
+pretrained/
+**/ckpts
 
 # experiments
 notebooks/

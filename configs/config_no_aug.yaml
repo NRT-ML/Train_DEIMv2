@@ -9,34 +9,9 @@
 #   - deimv2_hgnetv2_femto_coco (軽量: 1.0M params, 1.7 GFLOPs, AP 31.0)
 #   - deimv2_hgnetv2_pico_coco  (小型: 1.5M params, 5.2 GFLOPs, AP 38.5)
 #   - deimv2_hgnetv2_n_coco     (N: 3.6M params, 6.8 GFLOPs, AP 43.0)
-#   - deimv2_hgnetv2_s_coco     (S: 9.7M params, 25.6 GFLOPs, AP 50.9) ← 推奨
-#   - deimv2_dinov3_s_coco      (S+: 9.7M params, 25.6 GFLOPs, AP 50.9, DINOv3)
+#   - deimv2_dinov3_s_coco      (S: 9.7M params, 25.6 GFLOPs, AP 50.9)
 #   - deimv2_dinov3_m_coco      (M: 18.1M params, 52.2 GFLOPs, AP 53.0)
-#   - deimv2_dinov3_l_coco      (L: 32.2M params, 96.7 GFLOPs, AP 56.0)
-#   - deimv2_dinov3_x_coco      (X: 50.3M params, 151.6 GFLOPs, AP 57.8)
-#
-# [DEIM-DFINEシリーズ - HGNetv2バックボーン]
-#   - deim_hgnetv2_n_coco       (N: 3.1M params, 5.9 GFLOPs)
-#   - deim_hgnetv2_s_coco       (S: 9.7M params, 25.7 GFLOPs)
-#   - deim_hgnetv2_m_coco       (M: 18.8M params, 56.6 GFLOPs)
-#   - deim_hgnetv2_l_coco       (L: 32.8M params, 107.3 GFLOPs)
-#   - deim_hgnetv2_x_coco       (X: 57.8M params, 202.9 GFLOPs)
-#
-# [DFINEシリーズ - HGNetv2バックボーン]
-#   - dfine_hgnetv2_n_coco      (N: 3.0M params, 5.8 GFLOPs)
-#   - dfine_hgnetv2_s_coco      (S: 9.6M params, 25.6 GFLOPs)
-#   - dfine_hgnetv2_m_coco      (M: 18.7M params, 56.5 GFLOPs)
-#   - dfine_hgnetv2_l_coco      (L: 32.7M params, 107.2 GFLOPs)
-#   - dfine_hgnetv2_x_coco      (X: 57.7M params, 202.8 GFLOPs)
-#
-# [DEIM-RTDETRv2シリーズ - ResNet/Swinバックボーン]
-#   - deim_r18vd_coco           (ResNet-18: 軽量)
-#   - deim_r34vd_coco           (ResNet-34: 中型)
-#   - deim_r50vd_coco           (ResNet-50: 標準)
-#   - deim_r101vd_coco          (ResNet-101: 大型)
-#   - deim_swin_t_coco          (Swin-Tiny: Transformer)
-#   - deim_swin_s_coco          (Swin-Small: Transformer)
-#
+# ========================================
 model: deimv2_hgnetv2_n_coco
 
 num_classes: # 自動計算。実際のクラス数 + 1(背景クラス)
