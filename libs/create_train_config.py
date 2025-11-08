@@ -183,18 +183,23 @@ class CreateTrainConfig:
         - train_dataloader.collate_fn.base_size (存在する場合)
         """
         model_name = self.cfg['model']
+
+        auto_change_size = False
         
         # モデル名から入力サイズを取得
         input_size = MODEL_INPUT_SIZES.get(model_name, [640, 640])
 
-        # eval_spatial_size
-        self.train_cfg['eval_spatial_size'] = input_size
-
         # transforms
         for data_loader in ['train_dataloader', 'val_dataloader']:
-            transforms = self.train_cfg[data_loader]['dataset']['transforms']['ops']
+            transforms = self.train_cfg[data_loader].get('dataset', {}).get('transforms', {}).get('ops', [])
             for op in transforms:
                 if op['type'] == 'Resize':
                     op['size'] = input_size
+                    auto_change_size = True
                 elif op['type'] == "Mosaic":
                     op['output_size'] = input_size[0]//2
+                    auto_change_size = True
+
+        # eval_spatial_size
+        if auto_change_size:
+            self.train_cfg['eval_spatial_size'] = input_size

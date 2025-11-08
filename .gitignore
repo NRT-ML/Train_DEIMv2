@@ -1,5 +1,6 @@
 configs/*
 !configs/config.yaml
+!configs/config_no_aug.yaml
 datasets/
 outputs/
 weight/
