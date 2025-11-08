@@ -5,7 +5,6 @@ DEIMv2モデルの訓練を簡単に実行するためのトレーニングフ�
 ## 📋 目次
 
 - [概要](#概要)
-- [重要な注意事項](#重要な注意事項)
 - [ディレクトリ構成](#ディレクトリ構成)
 - [環境構築](#環境構築)
 - [データセットの準備](#データセットの準備)
@@ -28,15 +27,6 @@ DEIMv2モデルの訓練を簡単に実行するためのトレーニングフ�
 - **ONNX エクスポート**: 訓練後に ONNX 形式へ自動変換可能
 - **ファインチューニング**: 学習済みモデルを自動ダウンロードして再訓練
 - **バックボーン自動ダウンロード**: DINOv3（S/M）バックボーンを自動取得
-
-## 重要な注意事項
-
-- **DINOv3 バックボーンの L/X サイズには今後も対応しません。**
-  以下のモデルは本フレームワークでは扱えず、今後もサポート予定はありません。
-  - ❌ `deimv2_dinov3_l_coco` (Meta AI DINOv3 ViT-S/16)
-  - ❌ `deimv2_dinov3_x_coco` (Meta AI DINOv3 ViT-S/16+)
-
-- 現在の自動ダウンロード機能は、DINOv3 の S/M バックボーンのみを対象としています。
 
 ## ディレクトリ構成
 
@@ -157,16 +147,16 @@ python train.py -c configs/config.yaml -t -e
 
 ### 自動ダウンロード機能
 
-#### バックボーン（DINOv3 S/M のみ対応）
+#### バックボーン
+
+※ hgnetv2はDEIMv2がデフォルトで自動ダウンロード。
 
 | モデル | バックボーン | ファイル名 | 自動DL |
 |--------|--------------|-----------|--------|
-| `deimv2_dinov3_s_coco` | ViT-Tiny (蒸留版) | `vitt_distill.pt` | ✅ |
-| `deimv2_dinov3_m_coco` | ViT-Tiny+ (蒸留版) | `vittplus_distill.pt` | ✅ |
+| `deimv2_dinov3_s_coco` | ViT-Tiny | `vitt_distill.pt` | ✅ |
+| `deimv2_dinov3_m_coco` | ViT-Tiny+ | `vittplus_distill.pt` | ✅ |
 | `deimv2_dinov3_l_coco` | DINOv3 ViT-S/16 | - | ❌ 対応予定なし |
 | `deimv2_dinov3_x_coco` | DINOv3 ViT-S/16+ | - | ❌ 対応予定なし |
-
-※ hgnetv2はDEIMv2がデフォルトで自動ダウンロード。
 
 ダウンロード先: `DEIMv2/ckpts/`
 
