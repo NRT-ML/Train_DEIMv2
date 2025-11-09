@@ -1,91 +1,93 @@
+English | [日本語](/README_jp.md)
+
 # Train DEIMv2
 
-DEIMv2モデルの訓練を簡単に実行するためのトレーニングフレームワークです。
+A training framework that makes it easy to run training for the [DEIMv2](https://github.com/Intellindust-AI-Lab/DEIMv2) model.
 
-## 📋 目次
+## Table of Contents
 
-- [概要](#概要)
-- [ディレクトリ構成](#ディレクトリ構成)
-- [環境構築](#環境構築)
-- [データセットの準備](#データセットの準備)
-- [モデルの訓練](#モデルの訓練)
-- [利用可能なモデル](#利用可能なモデル)
-- [出力ファイル](#出力ファイル)
-- [高度な使い方](#高度な使い方)
-- [ライセンス](#ライセンス)
-- [参考リンク](#参考リンク)
+- [Overview](#overview)
+- [Directory Structure](#directory-structure)
+- [Environment Setup](#environment-setup)
+- [Dataset Preparation](#dataset-preparation)
+- [Training the Model](#training-the-model)
+- [Available Models](#available-models)
+- [Output Files](#output-files)
+- [Advanced Usage](#advanced-usage)
+- [License](#license)
+- [References](#references)
 
-## 概要
+## Overview
 
-本リポジトリは、DEIMv2 オブジェクト検出モデルをカスタムデータセットで訓練する手間を大幅に削減することを目的に作成されました。難解な設定ファイルの管理を自動化し、最小限の設定で訓練を開始できます。
+This repository was created to drastically reduce the effort needed to train the DEIMv2 object detection model on your custom dataset. It automates the management of complex configuration files so you can start training with minimal setup.
 
-### 主な機能
+### Key Features
 
-- **簡易設定**: YAML 設定から訓練用設定を自動生成
-- **自動クラス数計算**: COCO 形式アノテーションからクラス数を自動取得
-- **モデル入力サイズ調整**: モデルに応じた最適入力サイズを自動設定
-- **ONNX エクスポート**: 訓練後に ONNX 形式へ自動変換可能
-- **ファインチューニング**: 学習済みモデルを自動ダウンロードして再訓練
-- **バックボーン自動ダウンロード**: DINOv3（S/M）バックボーンを自動取得
+- **Simple setup**: Automatically generates the training configuration from a YAML definition
+- **Automatic class counting**: Reads the number of classes from COCO-format annotations
+- **Input size adjustment**: Sets the optimal input size for each model
+- **ONNX export**: Optionally converts the trained model to ONNX right after training
+- **Fine-tuning**: Downloads pretrained weights and retrains them automatically
+- **Automatic backbone download**: Fetches DINOv3 (S/M) backbones as needed
 
-## ディレクトリ構成
+## Directory Structure
 
 ```text
 Train_DEIMv2/
-├── requirements.txt            # 依存パッケージ
-├── train.py                    # メイン訓練スクリプト
+├── requirements.txt            # Dependency list
+├── train.py                    # Main training script
 │
-├── configs/                    # 設定ファイル群
-│   ├── config.yaml             # ユーザー設定ファイル (サンプル1)
-│   └── config_no_aug.yaml      # ユーザー設定ファイル (サンプル2)
+├── configs/                    # Configuration files
+│   ├── config.yaml             # Sample user configuration (with augmentation)
+│   └── config_no_aug.yaml      # Sample user configuration (no augmentation)
 │
-├── libs/                       # 訓練支援モジュール
+├── libs/                       # Helper modules for training
 │
-├── DEIMv2/                     # 元の DEIMv2 ソース
-│   ├── ckpts/                  # DINOv3 バックボーン配置先（自動DL）
+├── DEIMv2/                     # Original DEIMv2 source
+│   ├── ckpts/                  # DINOv3 backbones (downloaded automatically)
 │   └── ...
 │
-├── datasets/                   # データセット配置ディレクトリ
-│   └── your_dataset/         # coco形式
+├── datasets/                   # Dataset directory
+│   └── your_dataset/           # COCO format dataset
 │
-├── pretrained/                 # 学習済みモデル配置先（自動DL）
+├── pretrained/                 # Pretrained weights (downloaded automatically)
 │
-├── outputs/                    # 訓練結果出力先
+├── outputs/                    # Training outputs
 │   └── {experiment_name}/
 │
-└── weight/                     # hgnetv2 学習済み重み配置先(自動DL)
+└── weight/                     # Pretrained hgnetv2 weights (downloaded automatically)
 ```
 
-## 環境構築
+## Environment Setup
 
-### 1. リポジトリのクローン
+### 1. Clone the repository
 
 ```bash
 git clone --recursive https://github.com/NRT-ML/Train_DEIMv2.git
 cd Train_DEIMv2
 ```
 
-### 2. 依存パッケージのインストール
+### 2. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## データセットの準備
+## Dataset Preparation
 
-### COCOフォーマット
+### COCO format
 
 ```text
 datasets/
 └── your_dataset/
-    ├── train/                 # 訓練画像
-    ├── val/                   # 検証画像
+    ├── train/                 # Training images
+    ├── val/                   # Validation images
     └── annotations/
         ├── train_annotations.json
         └── val_annotations.json
 ```
 
-### アノテーション形式（抜粋）
+### Annotation format (excerpt)
 
 ```json
 {
@@ -116,57 +118,57 @@ datasets/
 }
 ```
 
-## モデルの訓練
+## Training the Model
 
-### 基本的な使い方
+### Basic workflow
 
-1. `configs/config.yaml` を編集（モデル名やデータセットパスを指定）
-2. 以下のコマンドいずれかを実行
+1. Edit `configs/config.yaml` (set the model name, dataset paths, etc.)
+2. Run one of the commands below
 
 ```bash
-# ランダム初期化での訓練
+# Train from random initialization
 python train.py -c configs/config.yaml
 
-# 学習済み重みを使ったファインチューニング
+# Fine-tune with pretrained weights
 python train.py -c configs/config.yaml -t
 
-# 訓練後に ONNX を自動エクスポート
+# Export to ONNX after training
 python train.py -c configs/config.yaml -e
 
-# ファインチューニング + ONNX エクスポート
+# Fine-tuning + ONNX export
 python train.py -c configs/config.yaml -t -e
 ```
 
-### コマンドライン引数
+### Command-line arguments
 
-| 引数 | 短縮形 | 内容 | 必須 |
-|------|--------|------|------|
-| `--config` | `-c` | 設定ファイル（YAML）のパス | ✓ |
-| `--tuning` | `-t` | 学習済みモデルをダウンロードしてファインチューニング |  |
-| `--export-onnx` | `-e` | 訓練後に最良モデルを ONNX 形式で保存 |  |
+| Argument | Short | Description | Required |
+|----------|-------|-------------|----------|
+| `--config` | `-c` | Path to the YAML configuration file | ✓ |
+| `--tuning` | `-t` | Download pretrained weights and fine-tune |  |
+| `--export-onnx` | `-e` | Export the best model to ONNX after training |  |
 
-### 自動ダウンロード機能
+### Automatic downloads
 
-#### バックボーン
+#### Backbones
 
-※ hgnetv2はDEIMv2がデフォルトで自動ダウンロード。
+Note: hgnetv2 weights are downloaded automatically by DEIMv2 by default.
 
-| モデル | バックボーン | ファイル名 | 自動DL |
-|--------|--------------|-----------|--------|
+| Model | Backbone | File name | Auto download |
+|-------|----------|-----------|----------------|
 | `deimv2_dinov3_s_coco` | ViT-Tiny | `vitt_distill.pt` | ✅ |
 | `deimv2_dinov3_m_coco` | ViT-Tiny+ | `vittplus_distill.pt` | ✅ |
-| `deimv2_dinov3_l_coco` | DINOv3 ViT-S/16 | - | ❌ 対応予定なし |
-| `deimv2_dinov3_x_coco` | DINOv3 ViT-S/16+ | - | ❌ 対応予定なし |
+| `deimv2_dinov3_l_coco` | DINOv3 ViT-S/16 | - | ❌ Not supported |
+| `deimv2_dinov3_x_coco` | DINOv3 ViT-S/16+ | - | ❌ Not supported |
 
-ダウンロード先: `DEIMv2/ckpts/`
+Download destination: `DEIMv2/ckpts/`
 
-#### 学習済みモデル（ファインチューニング用）
+#### Pretrained models (for fine-tuning)
 
-`-t` オプションを指定すると、モデルに応じた COCO 学習済み重みを Google Drive から自動ダウンロードします。
+When the `-t` option is provided, the appropriate COCO-pretrained weights are downloaded from Google Drive for the selected model.
 
-ダウンロード先: `pretrained/`
+Download destination: `pretrained/`
 
-### 設定ファイルの編集
+### Editing the configuration file
 
 ```yaml
 model: deimv2_hgnetv2_n_coco
@@ -178,101 +180,101 @@ optimizer:
   lr: 0.0004
   weight_decay: 0.0001
 
-train_dataloader: 
+train_dataloader:
   total_batch_size: 4
-  dataset: 
+  dataset:
     img_folder: datasets/your_dataset/train
     ann_file: datasets/your_dataset/annotations/train_annotations.json
     transforms:
-      ops:                                          # データ拡張設定(任意。DEIMv2のConfig参照)
+      ops:                                          # Optional data augmentation; see DEIMv2 configs
         ...
 
-val_dataloader: 
+val_dataloader:
   total_batch_size: 4
   dataset:
     img_folder: datasets/your_dataset/val
     ann_file: datasets/your_dataset/annotations/val_annotations.json
     transforms:
-      ops:                                          # データ拡張設定(任意。DEIMv2のConfig参照)
+      ops:                                          # Optional data augmentation; see DEIMv2 configs
         ...
 ```
 
-## 利用可能なモデル
+## Available Models
 
-### DEIMv2シリーズ (推奨)
+### DEIMv2 series (recommended)
 
-#### HGNetv2 バックボーン
+#### HGNetv2 backbone
 
-| モデル名 | Param | FLOPs | AP | 入力サイズ | 用途 |
-|----------|-------|-------|----|------------|------|
-| `deimv2_hgnetv2_atto_coco` | 0.5M | 0.8G | 23.8 | 320×320 | 超軽量・エッジ用途 |
-| `deimv2_hgnetv2_femto_coco`| 1.0M | 1.7G | 31.0 | 416×416 | 軽量デバイス |
-| `deimv2_hgnetv2_pico_coco` | 1.5M | 5.2G | 38.5 | 640×640 | 小型デバイス |
-| `deimv2_hgnetv2_n_coco`    | 3.6M | 6.8G | 43.0 | 640×640 | バランス重視 |
-| `deimv2_hgnetv2_s_coco`    | 9.7M | 25.6G| 50.9 | 640×640 | 高精度（推奨） |
+| Model name | Param | FLOPs | AP | Input size | Use case |
+|------------|-------|-------|----|------------|----------|
+| `deimv2_hgnetv2_atto_coco` | 0.5M | 0.8G | 23.8 | 320×320 | Ultra lightweight, edge devices |
+| `deimv2_hgnetv2_femto_coco` | 1.0M | 1.7G | 31.0 | 416×416 | Lightweight devices |
+| `deimv2_hgnetv2_pico_coco` | 1.5M | 5.2G | 38.5 | 640×640 | Compact devices |
+| `deimv2_hgnetv2_n_coco` | 3.6M | 6.8G | 43.0 | 640×640 | Balanced choice |
+| `deimv2_hgnetv2_s_coco` | 9.7M | 25.6G | 50.9 | 640×640 | High accuracy (recommended) |
 
-#### DINOv3 バックボーン
+#### DINOv3 backbone
 
-| モデル名 | バックボーン | Param | 入力サイズ | 対応状況 |
-|----------|-------------|-------|------------|----------|
-| `deimv2_dinov3_s_coco` | ViT-Tiny (蒸留版) | 9.7M | 640×640 | ✅ 対応 |
-| `deimv2_dinov3_m_coco` | ViT-Tiny+ (蒸留版) | 18.1M | 640×640 | ✅ 対応 |
+| Model name | Backbone | Param | Input size | Status |
+|------------|----------|-------|------------|--------|
+| `deimv2_dinov3_s_coco` | ViT-Tiny (distilled) | 9.7M | 640×640 | ✅ Supported |
+| `deimv2_dinov3_m_coco` | ViT-Tiny+ (distilled) | 18.1M | 640×640 | ✅ Supported |
 
-### ファインチューニング対応モデル
+### Fine-tuning ready models
 
-| モデル名 | 自動ダウンロード | 備考 |
-|----------|-----------------|------|
-| `deimv2_hgnetv2_atto_coco` | ✅ | HGNetv2 系 |
-| `deimv2_hgnetv2_femto_coco`| ✅ | 〃 |
-| `deimv2_hgnetv2_pico_coco` | ✅ | 〃 |
-| `deimv2_hgnetv2_n_coco`    | ✅ | 〃 |
-| `deimv2_dinov3_s_coco`     | ✅ | DINOv3 S |
-| `deimv2_dinov3_m_coco`     | ✅ | DINOv3 M |
-| `deimv2_dinov3_l_coco`     | ❌ | サポート対象外 |
-| `deimv2_dinov3_x_coco`     | ❌ | サポート対象外 |
+| Model name | Auto download | Notes |
+|------------|----------------|-------|
+| `deimv2_hgnetv2_atto_coco` | ✅ | HGNetv2 family |
+| `deimv2_hgnetv2_femto_coco` | ✅ | HGNetv2 family |
+| `deimv2_hgnetv2_pico_coco` | ✅ | HGNetv2 family |
+| `deimv2_hgnetv2_n_coco` | ✅ | HGNetv2 family |
+| `deimv2_dinov3_s_coco` | ✅ | DINOv3 S |
+| `deimv2_dinov3_m_coco` | ✅ | DINOv3 M |
+| `deimv2_dinov3_l_coco` | ❌ | Not supported |
+| `deimv2_dinov3_x_coco` | ❌ | Not supported |
 
-## 出力ファイル
+## Output Files
 
 ```text
 outputs/
 └── my_experiment/
-    ├── best_stg*.pth          # Stage1 最良モデル
-    ├── best_stg*.onnx         # ONNX （-e 指定時）
-    ├── last.pth               # 最終エポック
-    ├── checkpoint000X.pth     # 定期保存
-    ├── log.txt                # 訓練ログ
-    ├── eval/                  # 評価結果
-    └── summary/               # TensorBoard ログ
+    ├── best_stg*.pth          # Best stage model
+    ├── best_stg*.onnx         # ONNX export (when -e is specified)
+    ├── last.pth               # Final epoch checkpoint
+    ├── checkpoint000X.pth     # Periodic checkpoints
+    ├── log.txt                # Training log
+    ├── eval/                  # Evaluation results
+    └── summary/               # TensorBoard logs
 ```
 
-## 高度な使い方
+## Advanced Usage
 
-### カスタムデータ拡張
+### Custom data augmentation
 
-`config.yaml`の`train_dataloader.dataset.transforms.ops`セクションで、データ拡張を細かく制御できます:
+Control data augmentation via the `train_dataloader.dataset.transforms.ops` section in `config.yaml`:
 
 ```yaml
 transforms:
   ops: # Sample
-    - {type: Resize}  # Resizeのsize, Mosaicのoutput_sizeはimage_sizeから自動設定
+    - {type: Resize}  # Resize size and Mosaic output_size are derived from image_size automatically
     - {type: ConvertPILImage, dtype: 'float32', scale: true}
     - {type: ConvertBoxes, fmt: 'cxcywh', normalize: true}
 ```
 
-### エポック設定の詳細
+### Epoch scheduling details
 
-`libs/create_train_config.py` にて以下を自動計算しています。
+`libs/create_train_config.py` automatically computes the following values:
 
-- `flat_epoch`: 総エポックの 50%
-- `no_aug_epoch`: 総エポックの 10%
-- `mixup_epochs`: 総エポックの 4% 〜 50%
+- `flat_epoch`: 50% of total epochs
+- `no_aug_epoch`: 10% of total epochs
+- `mixup_epochs`: 4% to 50% of total epochs
 
-必要に応じてコード側で調整ください。
+Adjust the code if you need different behavior.
 
-## ライセンス
+## License
 
-このプロジェクトは DEIMv2 のライセンスに準拠します。詳細は `DEIMv2/LICENSE` を参照してください。
+This project follows the DEIMv2 license. See `DEIMv2/LICENSE` for details.
 
-## 参考リンク
+## References
 
-- [DEIMv2 公式リポジトリ](https://github.com/Intellindust-AI-Lab/DEIMv2)
+- [DEIMv2 official repository](https://github.com/Intellindust-AI-Lab/DEIMv2)
