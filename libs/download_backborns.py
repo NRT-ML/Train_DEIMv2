@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import gdown
 
-BACKBONE_DIR = Path(__file__).absolute().parent.parent / "DEIMv2/ckpts"
+BACKBONE_DIR = Path(__file__).absolute().parent.parent / "ckpts"
 MODEL_BACKBONE_MAP = {
     "deimv2_dinov3_s_coco": "vitt_distill",
     "deimv2_dinov3_m_coco": "vittplus_distill",

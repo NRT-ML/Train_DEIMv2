@@ -37,13 +37,11 @@ optimizer:
 # 訓練データローダー設定
 # ========================================
 train_dataloader: 
-  collate_fn: {} # 自動設定
   total_batch_size: 4
   dataset: 
-    img_folder: datasets\COCOstyle_small\train                                
-    ann_file: datasets\COCOstyle_small\annotations\train_annotations.json 
+    img_folder: datasets/COCOstyle_small/train                                
+    ann_file: datasets/COCOstyle_small/annotations/train_annotations.json 
     transforms:
-      policy: {} #自動設定
       ops:
         - {
             "type": "Mosaic",
@@ -73,8 +71,8 @@ train_dataloader:
 val_dataloader: 
   total_batch_size: 4
   dataset:
-    img_folder: datasets\COCOstyle_small\val                        
-    ann_file: datasets\COCOstyle_small\annotations\val_annotations.json 
+    img_folder: datasets/COCOstyle_small/val                        
+    ann_file: datasets/COCOstyle_small/annotations/val_annotations.json 
     transforms:
       ops:
         - {type: Resize}  # sizeはimage_sizeから自動設定

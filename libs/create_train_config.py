@@ -2,6 +2,7 @@ import yaml
 import json
 import os, sys
 from pathlib import Path
+import copy
 
 # YAMLのアンカー参照（*id001など）を無効化するカスタムDumper
 class NoAliasDumper(yaml.SafeDumper):
@@ -99,7 +100,7 @@ class CreateTrainConfig:
 
     def _copy_to_train_cfg(self):
         """self.cfgから必要な情報のみをself.train_cfgにコピー"""
-        self.train_cfg = self.cfg.copy()
+        self.train_cfg = copy.deepcopy(self.cfg)
         if 'model' in self.train_cfg:
             del self.train_cfg['model']
         if "epochs" in self.train_cfg:
@@ -127,31 +128,41 @@ class CreateTrainConfig:
     
     def _add_epochs(self):
         """エポック数をtrain_cfgに追加"""
-        epochs = self.cfg['epochs']
-        self.train_cfg['epoches'] = epochs # 総エポック数
+        epochs = self.cfg.get('epochs')
+        if epochs:
+            self.train_cfg['epoches'] = epochs # 総エポック数
 
-        # flat epoch
-        flat_epoch = max(1, int(epochs * 0.5))
-        self.train_cfg['flat_epoch'] = flat_epoch
+            # flat epoch
+            flat_epoch = max(1, int(epochs * 0.5))
+            self.train_cfg['flat_epoch'] = flat_epoch
 
-        # no aug epoch
-        no_aug_epoch = int(epochs * 0.1)
-        self.train_cfg['no_aug_epoch'] = no_aug_epoch
-        
-        # mixup epochs
-        start_epoch = max(1, int(epochs * 0.04))  # At least epoch 1
-        mixup_epochs = [start_epoch, flat_epoch]
-        self.train_cfg["train_dataloader"]["collate_fn"]["mixup_epochs"] = mixup_epochs
-
-        # stop epoch
-        self.train_cfg["train_dataloader"]["collate_fn"]["stop_epoch"] = epochs - no_aug_epoch
-
-        # copy blend epoch
-        self.train_cfg["train_dataloader"]["collate_fn"]["copyblend_epochs"] = [start_epoch, epochs - no_aug_epoch]
+            # no aug epoch
+            no_aug_epoch = int(epochs * 0.1)
+            self.train_cfg['no_aug_epoch'] = no_aug_epoch
             
-        # data aug epochs
-        self.train_cfg["train_dataloader"]["dataset"]["transforms"]["policy"]["epoch"] = \
-            [start_epoch, flat_epoch, epochs - no_aug_epoch]
+            # mixup epochs
+            start_epoch = max(1, int(epochs * 0.04))  # At least epoch 1
+            mixup_epochs = [start_epoch, flat_epoch]
+            
+            # train_dataloaderの設定を初期化
+            self.train_cfg.setdefault("train_dataloader", {}).setdefault("collate_fn", {})
+            self.train_cfg["train_dataloader"].setdefault("dataset", {}).setdefault("transforms", {}).setdefault("policy", {})
+            # mixup_epochs
+            self.train_cfg["train_dataloader"]["collate_fn"]["mixup_epochs"] = mixup_epochs
+            # stop epoch
+            self.train_cfg["train_dataloader"]["collate_fn"]["stop_epoch"] = epochs - no_aug_epoch
+            # copy blend epoch
+            self.train_cfg["train_dataloader"]["collate_fn"]["copyblend_epochs"] = [start_epoch, epochs - no_aug_epoch]
+                
+            # data aug epochs
+            self.train_cfg["train_dataloader"]["dataset"]["transforms"]["policy"]["epoch"] = \
+                [start_epoch, flat_epoch, epochs - no_aug_epoch]
+            
+            # DEIMCriterionの設定を初期化
+            self.train_cfg.setdefault("DEIMCriterion", {}).setdefault("matcher", {})
+            # matcher_change_epoch
+            self.train_cfg["DEIMCriterion"]["matcher"]["matcher_change_epoch"] = int((epochs - no_aug_epoch)*0.9)
+
         
         # # warmup iter
         # n_imgs = self._count_images(self.train_cfg["train_dataloader"]["dataset"]["img_folder"])

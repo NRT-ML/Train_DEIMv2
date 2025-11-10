@@ -37,13 +37,10 @@ optimizer:
 # 訓練データローダー設定
 # ========================================
 train_dataloader: 
-  collate_fn: {} # 自動設定
   total_batch_size: 4
   dataset: 
     img_folder: datasets/COCOstyle_small/train                                
     ann_file: datasets/COCOstyle_small/annotations/train_annotations.json 
-    transforms:
-      policy: {} #自動設定
       
 # ========================================
 # 検証データローダー設定
