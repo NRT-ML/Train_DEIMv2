@@ -164,25 +164,29 @@ class CreateTrainConfig:
             self.train_cfg["DEIMCriterion"]["matcher"]["matcher_change_epoch"] = int((epochs - no_aug_epoch)*0.9)
 
         
-        # # warmup iter
-        # n_imgs = self._count_images(self.train_cfg["train_dataloader"]["dataset"]["img_folder"])
-        # batch_size = self.train_cfg["train_dataloader"]["total_batch_size"]
-        # iters_per_epoch = n_imgs // batch_size
+        # warmup iter
+        n_imgs = self._count_images(self.train_cfg["train_dataloader"]["dataset"]["img_folder"])
+        batch_size = self.train_cfg["train_dataloader"]["total_batch_size"]
+        iters_per_epoch = n_imgs // batch_size
 
-        # warmup_iter = int(iters_per_epoch * epochs * 0.05)
-        # min_warmup_iter = int(iters_per_epoch)
-        # warmup_iter = max(warmup_iter, min_warmup_iter)
+        warmup_iter = int(iters_per_epoch * epochs * 0.05)
+        min_warmup_iter = int(iters_per_epoch)
+        warmup_iter = max(warmup_iter, min_warmup_iter)
 
-        # # ema warmup iter
-        # ema_warmups = int(iters_per_epoch * epochs * 0.05)
-        # min_ema_warmups = int(iters_per_epoch)
-        # ema_warmups = max(ema_warmups, min_ema_warmups)
+        self.train_cfg['warmup_iter'] = warmup_iter
+
+        # ema warmup iter
+        ema_warmups = int(iters_per_epoch * epochs * 0.05)
+        min_ema_warmups = int(iters_per_epoch)
+        ema_warmups = max(ema_warmups, min_ema_warmups)
+
+        self.train_cfg['ema_warmups'] = ema_warmups
 
 
-    # def _count_images(folder: str) -> int:
-    #     """画像数をカウントします。"""
-    #     n_imgs = len([f for f in Path(folder).iterdir() if f.is_file()])
-    #     return n_imgs
+    def _count_images(self, folder: str) -> int:
+        """画像数をカウントします。"""
+        n_imgs = len([f for f in Path(folder).iterdir() if f.is_file()])
+        return n_imgs
     
     def _add_image_size(self):
         """モデルに適した入力サイズをtrain_cfgに追加
