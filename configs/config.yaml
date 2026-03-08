@@ -44,20 +44,20 @@ train_dataloader:
             "type": "Mosaic",
             "fill_value": 0,
             "max_cached_images": 50,
-            # "output_size": # automatically set from image_size
+            # "output_size": # auto-set based on model
             "probability": 1.0,
             "random_pop": True,
             "rotation_range": 10,
             "scaling_range": [0.5, 1.5],
             "translation_range": [0.1, 0.1],
             "use_cache": False,
-        } # size is automatically set from image_size
+        } # output_size is auto-set based on model
         - {"type": "RandomPhotometricDistort", "p": 0.5}
         - {"type": "RandomZoomOut", "fill": 0}
         - {"type": "RandomIoUCrop", "p": 0.8}
         - {"type": "SanitizeBoundingBoxes", "min_size": 1}
         - {"type": "RandomHorizontalFlip"}
-        - {"type": "Resize"} # size is automatically set from image_size
+        - {"type": "Resize"} # size is auto-set based on model
         - {"type": "SanitizeBoundingBoxes", "min_size": 1}
         - {"type": "ConvertPILImage", "dtype": "float32", "scale": True}
         - {"type": "ConvertBoxes", "fmt": "cxcywh", "normalize": True}
@@ -72,6 +72,6 @@ val_dataloader:
     ann_file: path/to/val_annotations.json 
     transforms:
       ops:
-        - {type: Resize}  # size is automatically set from image_size
+        - {type: Resize}  # size is auto-set based on model
         - {type: ConvertPILImage, dtype: 'float32', scale: true}
         - {type: ConvertBoxes, fmt: 'cxcywh', normalize: true}
