@@ -81,6 +81,7 @@ class CreateTrainConfig:
         self._copy_to_train_cfg()
         self._add_include()
         self._add_num_classes()
+        self._add_remap_mscoco_category()
         self._add_epochs()
         self._add_image_size()
         with open(output_path, 'w', encoding='utf-8') as f:
@@ -126,6 +127,10 @@ class CreateTrainConfig:
         
         return len(coco_data['categories'])
     
+    def _add_remap_mscoco_category(self):
+        """カスタムデータセット用にremap_mscoco_categoryをFalseに設定"""
+        self.train_cfg['remap_mscoco_category'] = False
+
     def _add_epochs(self):
         """エポック数をtrain_cfgに追加"""
         epochs = self.cfg.get('epochs')

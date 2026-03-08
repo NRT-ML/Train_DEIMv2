@@ -13,7 +13,7 @@ from DEIMv2.engine.core import YAMLConfig
 
 def export_to_onnx(config_path: str,
                    resume: str,
-                   opset: int = 17,
+                   opset: int = 18,
                    check: bool = True,
                    simplify: bool = True
                    ):
@@ -23,7 +23,7 @@ def export_to_onnx(config_path: str,
     Args:
         config_path (str): YAMLの設定ファイルのパス
         resume (str): 学習済みモデルの重み(.pthファイル)のパス
-        opset (int, optional): ONNXのopsetバージョン。デフォルトは17
+        opset (int, optional): ONNXのopsetバージョン。デフォルトは18
         check (bool, optional): エクスポート後にONNXモデルの検証を行うか。デフォルトはTrue
         simplify (bool, optional): ONNXモデルを簡略化するか。デフォルトはTrue
     """
