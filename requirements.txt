@@ -1,5 +1,5 @@
-torch==2.5.1
-torchvision==0.20.1
+torch==2.10.0
+torchvision==0.25.0
 faster-coco-eval>=1.6.7
 PyYAML
 tensorboard
@@ -7,5 +7,6 @@ scipy
 calflops
 transformers
 onnx
+onnxscript
 onnxsim
 gdown
