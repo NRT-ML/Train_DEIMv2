@@ -1,13 +1,13 @@
 # ========================================
-# モデル設定
+# Model Configuration
 # ========================================
-# 使用するモデル名を指定します。
-# 利用可能なモデル:
+# Specify the model name to use.
+# Available models:
 #
-# [DEIMv2シリーズ - DINOv3/HGNetv2バックボーン]
-#   - deimv2_hgnetv2_atto_coco  (超軽量: 0.5M params, 0.8 GFLOPs, AP 23.8)
-#   - deimv2_hgnetv2_femto_coco (軽量: 1.0M params, 1.7 GFLOPs, AP 31.0)
-#   - deimv2_hgnetv2_pico_coco  (小型: 1.5M params, 5.2 GFLOPs, AP 38.5)
+# [DEIMv2 Series - DINOv3/HGNetv2 Backbone]
+#   - deimv2_hgnetv2_atto_coco  (Ultra-light: 0.5M params, 0.8 GFLOPs, AP 23.8)
+#   - deimv2_hgnetv2_femto_coco (Light: 1.0M params, 1.7 GFLOPs, AP 31.0)
+#   - deimv2_hgnetv2_pico_coco  (Small: 1.5M params, 5.2 GFLOPs, AP 38.5)
 #   - deimv2_hgnetv2_n_coco     (N: 3.6M params, 6.8 GFLOPs, AP 43.0)
 #   - deimv2_dinov3_s_coco      (S: 9.7M params, 25.6 GFLOPs, AP 50.9)
 #   - deimv2_dinov3_m_coco      (M: 18.1M params, 52.2 GFLOPs, AP 53.0)
@@ -17,33 +17,33 @@ model: deimv2_hgnetv2_n_coco
 output_dir: "./outputs/deimv2_hgnetv2_n_custom_"
 
 # ========================================
-# 訓練設定
+# Training Configuration
 # ========================================
 epochs: 100
 
 # ========================================
-# オプティマイザ設定
+# Optimizer Configuration
 # ========================================
 optimizer:
-  type: AdamW           # オプティマイザの種類
-  lr: 0.0004            # 学習率（バッチサイズに応じて線形スケーリング推奨）
-  betas: [0.9, 0.999]   # Adam/AdamWのbetaパラメータ
-  weight_decay: 0.0001  # 重み減衰（L2正則化）
+  type: AdamW           # Optimizer type
+  lr: 0.0004            # Learning rate (linear scaling recommended based on batch size)
+  betas: [0.9, 0.999]   # Beta parameters for Adam/AdamW
+  weight_decay: 0.0001  # Weight decay (L2 regularization)
 
 # ========================================
-# 訓練データローダー設定
+# Training Dataloader Configuration
 # ========================================
 train_dataloader: 
   total_batch_size: 4
   dataset: 
-    img_folder: datasets/COCOstyle_small/train                                
-    ann_file: datasets/COCOstyle_small/annotations/train_annotations.json 
+    img_folder: path/to/train                                
+    ann_file: path/to/train_annotations.json 
       
 # ========================================
-# 検証データローダー設定
+# Validation Dataloader Configuration
 # ========================================
 val_dataloader: 
   total_batch_size: 4
   dataset:
-    img_folder: datasets/COCOstyle_small/val                        
-    ann_file: datasets/COCOstyle_small/annotations/val_annotations.json 
+    img_folder: path/to/val                        
+    ann_file: path/to/val_annotations.json 
