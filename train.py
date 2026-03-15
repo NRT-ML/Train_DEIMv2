@@ -13,24 +13,24 @@ from libs import (
 def main(cfg_path: str,
          tuning: bool = False,
          export_onnx: bool = False):
-    """設定ファイルから訓練用設定を生成し、訓練を実行"""
-    # 訓練用設定ファイルの生成
+    """Generate training config from settings file and execute training"""
+    # Generate training config
     ctc = CreateTrainConfig(cfg_path)
     train_cfg_path = ctc.train_cfg_path
     model_name = ctc.cfg["model"]
     
-    # 環境変数の設定
+    # Set environment variables
     env = os.environ.copy()
     env["CUDA_VISIBLE_DEVICES"] = "0"
 
-    # バックボーンモデルのダウンロード
+    # Download backbone model
     download_backbone(model_name)
 
-    # 学習済みモデルのダウンロード
+    # Download pretrained model
     if tuning:
         pretrained_path = download_pretrained(model_name)
     
-    # コマンドの実行（仮想環境のPythonを使用）
+    # Execute command (using virtual environment Python)
     command = [sys.executable, "DEIMv2/train.py", "-c", str(train_cfg_path), "--use-amp", "--seed=0"]
     if tuning and pretrained_path:
         command.extend(["-t", pretrained_path])
@@ -41,10 +41,10 @@ def main(cfg_path: str,
 
     resume = list(Path(ctc.cfg["output_dir"]).glob("**/best_stg*.pth"))[-1]
 
-    # onnxエクスポート
+    # Export to ONNX
     if export_onnx:
         if resume:
-            # ONNXエクスポートを実行
+            # Execute ONNX export
             onnx_path = export_to_onnx(
                 config_path=str(train_cfg_path),
                 resume=str(resume),

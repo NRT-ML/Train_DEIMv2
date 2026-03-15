@@ -14,13 +14,13 @@ BACKBONE_ID_MAP = {
 
 def download_backbone(model_name):
     """
-    Google Driveからバックボーンモデルをダウンロードする関数
+    Function to download backbone model from Google Drive.
     
     Args:
-        model_name (str): モデル名
+        model_name (str): Model name
     
     Returns:
-        bool: ダウンロード成功時はTrue、スキップ時はFalse。
+        bool: True on successful download, False if skipped.
     
     """
     if model_name not in MODEL_BACKBONE_MAP:
@@ -28,18 +28,18 @@ def download_backbone(model_name):
     
     backbone_name = MODEL_BACKBONE_MAP[model_name]
     
-    # 保存先ディレクトリを作成
+    # Create output directory
     BACKBONE_DIR.mkdir(parents=True, exist_ok=True)
     
-    # バックボーンダウンロード
+    # Download backbone
     output_path = str(BACKBONE_DIR / f"{backbone_name}.pt")
 
-    # Google DriveのダウンロードURL
+    # Google Drive download URL
     url = f"https://drive.google.com/uc?id={BACKBONE_ID_MAP[backbone_name]}"
 
-    # gdownを使用してファイルをダウンロード
+    # Download file using gdown
     gdown.download(url, str(output_path), quiet=False)
     
-    print(f"\nバックボーンダウンロード完了: {output_path}")
+    print(f"\nBackbone download complete: {output_path}")
     
     return True

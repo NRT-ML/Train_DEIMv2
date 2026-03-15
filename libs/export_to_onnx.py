@@ -18,14 +18,14 @@ def export_to_onnx(config_path: str,
                    simplify: bool = True
                    ):
     """
-    onnx変換。
+    Export to ONNX.
 
     Args:
-        config_path (str): YAMLの設定ファイルのパス
-        resume (str): 学習済みモデルの重み(.pthファイル)のパス
-        opset (int, optional): ONNXのopsetバージョン。デフォルトは18
-        check (bool, optional): エクスポート後にONNXモデルの検証を行うか。デフォルトはTrue
-        simplify (bool, optional): ONNXモデルを簡略化するか。デフォルトはTrue
+        config_path (str): Path to YAML config file
+        resume (str): Path to pretrained model weights (.pth file)
+        opset (int, optional): ONNX opset version. Default is 18
+        check (bool, optional): Whether to validate ONNX model after export. Default is True
+        simplify (bool, optional): Whether to simplify ONNX model. Default is True
     """
     cfg = YAMLConfig(config_path, resume=resume)
 
