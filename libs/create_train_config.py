@@ -68,16 +68,20 @@ MODEL_INPUT_SIZES = {
 
 class CreateTrainConfig:
     def __init__(self, cfg_path: str):
-        print(DEIMV2_CFG_DIR)
         self.cfg_path = cfg_path
-        self.train_cfg_path: str = Path(cfg_path).parent / 'train_config.yaml'
         
         self.cfg: dict | None = None
         self.train_cfg:dict | None = None
+
+        # Load config first so output_dir is available for train_cfg_path
+        self._load_cfg()
+        output_dir = Path(self.cfg["output_dir"])
+        output_dir.mkdir(parents=True, exist_ok=True)
+        self.train_cfg_path: Path = output_dir / 'train_config.yaml'
+
         self._generate_train_cfg(self.train_cfg_path)
 
     def _generate_train_cfg(self, output_path):
-        self._load_cfg()
         self._copy_to_train_cfg()
         self._add_include()
         self._add_num_classes()

@@ -39,7 +39,7 @@ def main(cfg_path: str,
         env=env
     )
 
-    resume = list(Path(ctc.cfg["output_dir"]).glob("**/best_stg*.pth"))[-1]
+    resume = list(ctc.train_cfg_path.parent.glob("**/best_stg*.pth"))[-1]
 
     # Export to ONNX
     if export_onnx:
