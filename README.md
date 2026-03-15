@@ -73,6 +73,8 @@ cd Train_DEIMv2
 pip install -r requirements.txt
 ```
 
+> **Note:** The latest `main` branch of this repository uses a different version of torch in `requirements.txt` than the original DEIMv2 (`torch==2.10.0` vs `torch==2.5.1`). If you want to train with the same `requirements.txt` as the original DEIMv2, please use [v1.0.0](https://github.com/NRT-ML/Train_DEIMv2/releases/tag/v1.0.0).
+
 ## Dataset Preparation
 
 ### COCO format
