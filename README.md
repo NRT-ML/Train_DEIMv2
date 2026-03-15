@@ -122,21 +122,21 @@ datasets/
 
 ### Basic workflow
 
-1. Edit `configs/sample_config.yaml` (set the model name, dataset paths, etc.)
+1. Copy `configs/sample_config.yaml` (with augmentation) or `configs/sample_config_no_aug.yaml` (without augmentation) to a new file (e.g. `configs/my_config.yaml`) and customize it (set the model name, dataset paths, etc.)
 2. Run one of the commands below
 
 ```bash
 # Train from random initialization
-python train.py -c configs/sample_config.yaml
+python train.py -c configs/my_config.yaml
 
 # Fine-tune with pretrained weights
-python train.py -c configs/sample_config.yaml -t
+python train.py -c configs/my_config.yaml -t
 
 # Export to ONNX after training
-python train.py -c configs/sample_config.yaml -e
+python train.py -c configs/my_config.yaml -e
 
 # Fine-tuning + ONNX export
-python train.py -c configs/sample_config.yaml -t -e
+python train.py -c configs/my_config.yaml -t -e
 ```
 
 ### Command-line arguments

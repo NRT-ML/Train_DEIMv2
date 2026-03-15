@@ -122,21 +122,21 @@ datasets/
 
 ### 基本的な使い方
 
-1. `configs/sample_config.yaml` を編集（モデル名やデータセットパスを指定）
+1. `configs/sample_config.yaml`（データ拡張あり）または `configs/sample_config_no_aug.yaml`（データ拡張なし）を任意のファイル名（例: `configs/my_config.yaml`）にコピーし、モデル名やデータセットパスなどを編集する
 2. 以下のコマンドいずれかを実行
 
 ```bash
 # ランダム初期化での訓練
-python train.py -c configs/sample_config.yaml
+python train.py -c configs/my_config.yaml
 
 # 学習済み重みを使ったファインチューニング
-python train.py -c configs/sample_config.yaml -t
+python train.py -c configs/my_config.yaml -t
 
 # 訓練後に ONNX を自動エクスポート
-python train.py -c configs/sample_config.yaml -e
+python train.py -c configs/my_config.yaml -e
 
 # ファインチューニング + ONNX エクスポート
-python train.py -c configs/sample_config.yaml -t -e
+python train.py -c configs/my_config.yaml -t -e
 ```
 
 ### コマンドライン引数
