@@ -38,8 +38,8 @@ Train_DEIMv2/
 ├── train.py                    # Main training script
 │
 ├── configs/                    # Configuration files
-│   ├── config.yaml             # Sample user configuration (with augmentation)
-│   └── config_no_aug.yaml      # Sample user configuration (no augmentation)
+│   ├── sample_config.yaml      # Sample user configuration (with augmentation)
+│   └── sample_config_no_aug.yaml  # Sample user configuration (no augmentation)
 │
 ├── libs/                       # Helper modules for training
 │
@@ -122,21 +122,21 @@ datasets/
 
 ### Basic workflow
 
-1. Edit `configs/config.yaml` (set the model name, dataset paths, etc.)
+1. Edit `configs/sample_config.yaml` (set the model name, dataset paths, etc.)
 2. Run one of the commands below
 
 ```bash
 # Train from random initialization
-python train.py -c configs/config.yaml
+python train.py -c configs/sample_config.yaml
 
 # Fine-tune with pretrained weights
-python train.py -c configs/config.yaml -t
+python train.py -c configs/sample_config.yaml -t
 
 # Export to ONNX after training
-python train.py -c configs/config.yaml -e
+python train.py -c configs/sample_config.yaml -e
 
 # Fine-tuning + ONNX export
-python train.py -c configs/config.yaml -t -e
+python train.py -c configs/sample_config.yaml -t -e
 ```
 
 ### Command-line arguments
@@ -251,7 +251,7 @@ outputs/
 
 ### Custom data augmentation
 
-Control data augmentation via the `train_dataloader.dataset.transforms.ops` section in `config.yaml`:
+Control data augmentation via the `train_dataloader.dataset.transforms.ops` section in `sample_config.yaml`:
 
 ```yaml
 transforms:

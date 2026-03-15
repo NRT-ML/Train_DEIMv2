@@ -38,8 +38,8 @@ Train_DEIMv2/
 ├── train.py                    # メイン訓練スクリプト
 │
 ├── configs/                    # 設定ファイル群
-│   ├── config.yaml             # ユーザー設定ファイル (サンプル1)
-│   └── config_no_aug.yaml      # ユーザー設定ファイル (サンプル2)
+│   ├── sample_config.yaml      # ユーザー設定ファイル (サンプル1)
+│   └── sample_config_no_aug.yaml  # ユーザー設定ファイル (サンプル2)
 │
 ├── libs/                       # 訓練支援モジュール
 │
@@ -122,21 +122,21 @@ datasets/
 
 ### 基本的な使い方
 
-1. `configs/config.yaml` を編集（モデル名やデータセットパスを指定）
+1. `configs/sample_config.yaml` を編集（モデル名やデータセットパスを指定）
 2. 以下のコマンドいずれかを実行
 
 ```bash
 # ランダム初期化での訓練
-python train.py -c configs/config.yaml
+python train.py -c configs/sample_config.yaml
 
 # 学習済み重みを使ったファインチューニング
-python train.py -c configs/config.yaml -t
+python train.py -c configs/sample_config.yaml -t
 
 # 訓練後に ONNX を自動エクスポート
-python train.py -c configs/config.yaml -e
+python train.py -c configs/sample_config.yaml -e
 
 # ファインチューニング + ONNX エクスポート
-python train.py -c configs/config.yaml -t -e
+python train.py -c configs/sample_config.yaml -t -e
 ```
 
 ### コマンドライン引数
@@ -251,7 +251,7 @@ outputs/
 
 ### カスタムデータ拡張
 
-`config.yaml`の`train_dataloader.dataset.transforms.ops`セクションで、データ拡張を細かく制御できます:
+`sample_config.yaml`の`train_dataloader.dataset.transforms.ops`セクションで、データ拡張を細かく制御できます:
 
 ```yaml
 transforms:
