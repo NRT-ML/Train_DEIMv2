@@ -68,7 +68,6 @@ MODEL_INPUT_SIZES = {
 
 class CreateTrainConfig:
     def __init__(self, cfg_path: str):
-        print(DEIMV2_CFG_DIR)
         self.cfg_path = cfg_path
         
         self.cfg: dict | None = None
