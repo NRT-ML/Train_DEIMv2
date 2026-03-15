@@ -1,5 +1,4 @@
 import os, sys
-import shutil
 import subprocess
 from pathlib import Path
 import argparse
@@ -40,12 +39,7 @@ def main(cfg_path: str,
         env=env
     )
 
-    # Save train_config.yaml to output_dir alongside other training artifacts
-    output_dir = Path(ctc.cfg["output_dir"])
-    output_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(str(train_cfg_path), output_dir / "train_config.yaml")
-
-    resume = list(output_dir.glob("**/best_stg*.pth"))[-1]
+    resume = list(ctc.train_cfg_path.parent.glob("**/best_stg*.pth"))[-1]
 
     # Export to ONNX
     if export_onnx:
